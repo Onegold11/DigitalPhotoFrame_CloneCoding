@@ -49,7 +49,29 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Image uri list
+     */
     private val imageUriList: MutableList<Uri> = mutableListOf()
+
+    /**
+     * Image storage content
+     */
+    private val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) {
+
+        if (it != null) {
+
+            if (imageUriList.size == 6) {
+                Toast.makeText(this, "이미 사진이 꽉 찼습니다.", Toast.LENGTH_SHORT).show()
+                return@registerForActivityResult
+            }
+
+            this.imageUriList.add(it)
+            this.imageViewList[imageUriList.size - 1].setImageURI(it)
+        } else {
+            Toast.makeText(this, "사진을 가져오지 못했습니다.", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     /**
      * onCreate
@@ -152,43 +174,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (resultCode != Activity.RESULT_OK) {
-            return
-        }
-
-        when(requestCode) {
-            200 -> {
-                val selectedImageUri: Uri? = data?.data
-
-                if (selectedImageUri != null) {
-
-                    if (imageUriList.size == 6) {
-                        Toast.makeText(this, "이미 사진이 꽉 찼습니다.", Toast.LENGTH_SHORT).show()
-                        return
-                    }
-
-                    this.imageUriList.add(selectedImageUri)
-                    this.imageViewList[imageUriList.size - 1].setImageURI(selectedImageUri)
-                } else {
-                    Toast.makeText(this, "사진을 가져오지 못했습니다.", Toast.LENGTH_SHORT).show()
-                }
-            }
-            else -> {
-                Toast.makeText(this, "사진을 가져오지 못했습니다.", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
     /**
      * Navigate photos
      */
     private fun navigatePhotos() {
 
-        val intent = Intent(Intent.ACTION_GET_CONTENT)
-        intent.type = "image/*"
-        startActivityForResult(intent, 200)
+        getContent.launch("image/*")
     }
 }
