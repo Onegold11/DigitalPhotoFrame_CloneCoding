@@ -7,7 +7,7 @@
     + View Animation
 + Android
     + Permission
-    + SAF(Storage Access Framework
+    + SAF(Storage Access Framework)
     
 ## Constraint Layout
 app:layout_constraintDimensionRatio 속성을 사용하면 제약 조건이 정해지지 않은 가로 또는 세로의 길이를 정할 수 있다.
@@ -68,4 +68,23 @@ override fun onRequestPermissionsResult(
     permissions: Array<out String>,
     grantResults: IntArray
 ) { ... }
+```
+
+## SAF
+저장된 이미지의 Uri를 가져올 수 있다.
+
+기존에는 액티비티나 콘텐츠 프로바이더에서 결과를 받으려면 기존에는 Intent를 사용하고 onActivityResult 메소드로 결과를 받아야 한다.
+
+하지만 startActivityForResult 메소드가 deprecated 됐기에 다른 방법을 사용해야 한다.
+
+먼저 결과를 받은 뒤에 동작할 코드를 만든다.
+이때 lifecycle owner 문제 때문에 멤버 변수로 만들어야 오류가 안 뜬다.
+```kotlin
+private val getContent = registerForActivityResult(
+    ActivityResultContracts.GetContent()
+) { ... }
+```
+그리고 원하는 위치에서 실행하면 된다.
+```kotlin
+getContent.launch("image/*")
 ```
